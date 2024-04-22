@@ -1,0 +1,10 @@
+       <View style={{marginHorizontal:20, marginTop:20}}>
+                <TouchableOpacity
+                    style={[parameters.styledButton, { backgroundColor: colors.buttons }]}
+                    onPress={() => {
+                        // Handle sign in action
+                    }}
+                >
+                    <Text style={styles.buttonTitle}>SIGN IN</Text>
+                </TouchableOpacity>
+     </View>
