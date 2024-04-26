@@ -5,9 +5,11 @@ export const colors = {
   buttons:'#ff8c52',
   statusbar:'#ff8c52',
   headerText:'white',
-  grey4:'#424242',
+  // grey4:'#424242',
   grey3:'#c7bfbf',
-  grey4:'#86939e',
+  grey4:'#A9A9A9',
+  grey2:'#E0E0E0',
+  cardbackground:'#f0f0f0',
 
 }
 
