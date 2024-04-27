@@ -84,6 +84,7 @@ export default function HomeScreen() {
         <View style={styles.headerTextView}>
           <Text style={styles.headerText}>Services</Text>
         </View>
+        {/* --------------------------------------- */}
         <View>
           <FlatList
             horizontal={true}
@@ -122,6 +123,14 @@ export default function HomeScreen() {
             )}
           />
         </View>
+        {/* ------------------ */}
+
+            {/* -=-change the order folloing, after make home page--- */}
+        <View style={styles.headerTextView}>
+          <Text style={styles.headerText}>Nearest parking</Text>
+        </View>
+        {/* --------------------------------- */}
+        
       </ScrollView>
     </View>
   );
