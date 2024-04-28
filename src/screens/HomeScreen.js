@@ -8,12 +8,17 @@ import {
   FlatList,
   Pressable,
   Image,
+  Dimensions,
 } from 'react-native';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import HomeHeader from '../components/HomeHeader';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {colors, parameters} from '../global/Styles';
-import {filterData} from '../global/Data';
+import {filterData, parkingData} from '../global/Data';
+import ParkCard from '../components/ParkCard';
+
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function HomeScreen() {
   // think of park as a state................
@@ -25,7 +30,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <HomeHeader />
       <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={true}>
-        <View>
+        <View style={{backgroundColor:colors.cardbackground,paddingBottom:10}}>
           <View
             style={{
               marginTop: 15,
@@ -125,11 +130,130 @@ export default function HomeScreen() {
         </View>
         {/* ------------------ */}
 
-            {/* -=-change the order folloing, after make home page--- */}
+        {/* -=-change the order folloing, after make home page--- */}
         <View style={styles.headerTextView}>
           <Text style={styles.headerText}>Nearest parking</Text>
         </View>
         {/* --------------------------------- */}
+        <View>
+          <FlatList
+            style={{marginBottom: 10, marginTop: 10}}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={parkingData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item}) => (
+              <View>
+                <ParkCard
+                  ScreenWidth={SCREEN_WIDTH * 0.8}
+                  images={item.images}
+                  parkName={item.ParkName}
+                  farAway={item.farAway}
+                  parkAddress={item.ParkAddress}
+                  averageReview={item.averageReview}
+                  NumberOfReviews={item.NumberOfReviews}
+                />
+              </View>
+            )}
+          />
+        </View>
+        {/* ------------------------------- */}
+
+        <View style={styles.headerTextView}>
+          <Text style={styles.headerText}>Nearest parking</Text>
+        </View>
+
+        {/* ------------------------------- */}
+        <View>
+          <FlatList
+            style={{marginBottom: 10, marginTop: 10}}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={parkingData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item}) => (
+              <View>
+                <ParkCard
+                  ScreenWidth={SCREEN_WIDTH * 0.8}
+                  images={item.images}
+                  parkName={item.ParkName}
+                  farAway={item.farAway}
+                  parkAddress={item.ParkAddress}
+                  averageReview={item.averageReview}
+                  NumberOfReviews={item.NumberOfReviews}
+                />
+              </View>
+            )}
+          />
+        </View>
+        {/* ------------------------------------------- */}
+
+        <View style={styles.headerTextView}>
+          <Text style={styles.headerText}>Parks in Your Area</Text>
+        </View>
+
+        {/* ------------------------------------------- */}
+
+        {/* <View style={{width: SCREEN_WIDTH, paddingTop: 10}}>
+  {
+    parkingData.map(item => (
+      <View key={item.id} style={{paddingBottom: 20}}>
+        <ParkCard
+          ScreenWidth={SCREEN_WIDTH * 0.8}
+          images={item.images}
+          parkName={item.ParkName}
+          farAway={item.farAway}
+          parkAddress={item.ParkAddress}
+          averageReview={item.averageReview}
+          NumberOfReviews={item.NumberOfReviews}
+        />
+      </View>
+    ))
+  }
+</View> */}
+
+        {/* <View>
+          <FlatList
+            style={{marginBottom: 10, marginTop: 10}}
+            // horizontal={true}
+            //
+            showsHorizontalScrollIndicator={false}
+            data={parkingData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item}) => (
+              <View>
+                <ParkCard
+                  ScreenWidth={SCREEN_WIDTH * 0.8}
+                  images={item.images}
+                  parkName={item.ParkName}
+                  farAway={item.farAway}
+                  parkAddress={item.ParkAddress}
+                  averageReview={item.averageReview}
+                  NumberOfReviews={item.NumberOfReviews}
+                />
+              </View>
+            )}
+          />
+        </View> */}
+
+        {/* ------------------------------------------- */}
+
+        {/* <View style={{width: SCREEN_WIDTH, paddingTop: 10}}>
+          {parkingData.map(item => (
+            <View key={item.id} style={{paddingBottom: 20}}>
+              <ParkCard
+                ScreenWidth={SCREEN_WIDTH * 0.95}
+                images={item.images}
+                parkName={item.ParkName}
+                farAway={item.farAway}
+                parkAddress={item.ParkAddress}
+                averageReview={item.averageReview}
+                NumberOfReviews={item.NumberOfReviews}
+              />
+            </View>
+          ))}
+        </View> */}
+
         
       </ScrollView>
     </View>
@@ -203,7 +327,6 @@ const styles = StyleSheet.create({
     height: 100,
   },
   smallCardSelected: {
-
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.buttons,
