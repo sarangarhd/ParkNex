@@ -8,3 +8,74 @@
                     <Text style={styles.buttonTitle}>SIGN IN</Text>
                 </TouchableOpacity>
      </View>
+
+
+
+
+
+     -----------------------------------------------------
+             <View style={styles.headerTextView}>
+          <Text style={styles.headerText}>Parks in Your Area</Text>
+        </View>
+
+        {/* ------------------------------------------- */}
+
+        {/* <View style={{width: SCREEN_WIDTH, paddingTop: 10}}>
+  {
+    parkingData.map(item => (
+      <View key={item.id} style={{paddingBottom: 20}}>
+        <ParkCard
+          ScreenWidth={SCREEN_WIDTH * 0.8}
+          images={item.images}
+          parkName={item.ParkName}
+          farAway={item.farAway}
+          parkAddress={item.ParkAddress}
+          averageReview={item.averageReview}
+          NumberOfReviews={item.NumberOfReviews}
+        />
+      </View>
+    ))
+  }
+</View> */}
+
+        {/* <View>
+          <FlatList
+            style={{marginBottom: 10, marginTop: 10}}
+            // horizontal={true}
+            //
+            showsHorizontalScrollIndicator={false}
+            data={parkingData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item}) => (
+              <View>
+                <ParkCard
+                  ScreenWidth={SCREEN_WIDTH * 0.8}
+                  images={item.images}
+                  parkName={item.ParkName}
+                  farAway={item.farAway}
+                  parkAddress={item.ParkAddress}
+                  averageReview={item.averageReview}
+                  NumberOfReviews={item.NumberOfReviews}
+                />
+              </View>
+            )}
+          />
+        </View> */}
+
+        {/* ------------------------------------------- */}
+
+        {/* <View style={{width: SCREEN_WIDTH, paddingTop: 10}}>
+          {parkingData.map(item => (
+            <View key={item.id} style={{paddingBottom: 20}}>
+              <ParkCard
+                ScreenWidth={SCREEN_WIDTH * 0.95}
+                images={item.images}
+                parkName={item.ParkName}
+                farAway={item.farAway}
+                parkAddress={item.ParkAddress}
+                averageReview={item.averageReview}
+                NumberOfReviews={item.NumberOfReviews}
+              />
+            </View>
+          ))}
+        </View> */}
