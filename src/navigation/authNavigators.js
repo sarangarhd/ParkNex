@@ -4,6 +4,7 @@ import SignInWelcomeScreen from '../screens/authScreens/SignInWelcomeScreen';
 import SigninScreen from '../screens/authScreens/SigninScreen';
 import HomeScreen from '../screens/HomeScreen';
 import RootClintTabs from './ClintTabs';
+import ParkMapScreen from '../screens/ParkMapScreen';
 
 const Auth = createStackNavigator();
 
@@ -42,6 +43,17 @@ export default function AuthStack() {
         }}
       />
       {/* ------------------ */}
+
+      <Auth.Screen
+        name="ParkMapScreen"
+        component={ParkMapScreen}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.RevealFromBottomAndroid,
+        }}
+      />
+
+      {/* ------------------- */}
     </Auth.Navigator>
   );
 }

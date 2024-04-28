@@ -16,11 +16,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {colors, parameters} from '../global/Styles';
 import {filterData, parkingData} from '../global/Data';
 import ParkCard from '../components/ParkCard';
-
+import {useNavigation} from '@react-navigation/native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-export default function HomeScreen() {
+export default function HomeScreen({navigation}) {
   // think of park as a state................
 
   const [park, setPark] = useState(true);
@@ -30,7 +30,8 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <HomeHeader />
       <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={true}>
-        <View style={{backgroundColor:colors.cardbackground,paddingBottom:10}}>
+        <View
+          style={{backgroundColor: colors.cardbackground, paddingBottom: 10}}>
           <View
             style={{
               marginTop: 15,
@@ -47,13 +48,15 @@ export default function HomeScreen() {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setPark(false)}>
+            <TouchableOpacity onPress={() =>{ setPark(false)
+            navigation.navigate('ParkMapScreen')
+            }}>
               <View
                 style={{
                   ...styles.parkButton,
                   backgroundColor: park ? colors.grey3 : colors.buttons,
                 }}>
-                <Text style={{...styles.parkText}}>Find Park</Text>
+                <Text style={{...styles.parkText}}>Reserve Parking</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -188,10 +191,23 @@ export default function HomeScreen() {
         </View>
         {/* ------------------------------------------- */}
 
-            {/* --removed code , it paste bu.text-no workkkk */}
-
-        
+        {/* --removed code , it paste bu.text-no workkkk */}
       </ScrollView>
+      {/* --------google map floating action----------- */}
+
+      { park &&
+        <View style={styles.floatButton}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ParkMapScreen');
+            }}>
+            <Icon name="map-marker" color={colors.buttons} size={32} />
+            <Text>Map</Text>
+          </TouchableOpacity>
+        </View>
+      }
+
+      {/* ------------------- */}
     </View>
   );
 }
@@ -279,5 +295,14 @@ const styles = StyleSheet.create({
   smallCardTextSelected: {
     fontWeight: 'bold',
     color: colors.grey2,
+  },
+  floatButton: {
+    position: 'absolute',
+    bottom: 10,
+    right: 15,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    padding: 10,
+    alignItems: 'center',
   },
 });
