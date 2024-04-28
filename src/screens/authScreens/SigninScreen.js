@@ -11,6 +11,7 @@ import { create } from "react-test-renderer";
 
 
 
+
 export default function SigninScreen({navigation}) {
 
     const[textinput2Fossued,setTextinput2Fossued] = useState(false);
@@ -101,7 +102,7 @@ export default function SigninScreen({navigation}) {
                 title="SIGN IN"
                 styles={parameters.styledButton}
                 titleStyle={styles.buttonTitle}
-                onPress={()=>{navigation.navigate('RootClintTabs')}}
+                onPress={()=>{navigation.navigate('DrawerNavigator')}}
                 />
         </View>
 

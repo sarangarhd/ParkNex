@@ -4,12 +4,20 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { colors, parameters } from '../global/Styles';
 import {withBadge} from 'react-native-elements';
 
+
 const BellIconWithBadge = withBadge(0)(Icon);
 
-export default function HomeHeader() {
+export default function HomeHeader({ navigation}) {
   return (
     <View style={styles.header}>
-        <View><Icon style={styles.bar} name="bars" /></View>
+        <View>
+        <Icon 
+        style={styles.bar} 
+        name="bars" 
+        onPress={() => {
+          navigation.toggleDrawer();
+        }}
+        /></View>
       
       <View style={styles.titleContainer}>
         <Text style={styles.headerText}>ParkNex</Text>
