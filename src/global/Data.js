@@ -57,7 +57,7 @@ export const parkingData = [
         discount: 20,
         parkFacilities: [
         {name: 'EV Charging ',image:'https://zdwl-tec.com/wp-content/uploads/2023/09/0053-EV-Charging-Network-Construction-1-jpg.webp'}],
-        id: '0',
+        id: '1',
     
     },
     {
@@ -81,7 +81,31 @@ export const parkingData = [
         discount: 20,
         parkFacilities: [
         {name: 'EV Charging ',image:'https://zdwl-tec.com/wp-content/uploads/2023/09/0053-EV-Charging-Network-Construction-1-jpg.webp'}],
-        id: '0',
+        id: '2',
+    
+    },
+    {
+        ParkName: 'Park4',
+        ParkAddress: 'No:27,Colombo-01',
+        // ParkImage: require(''),
+        images:'https://www.premiumcarparks.co.uk/themes/hambern-hambern-blank-bootstrap-4/assets/img/PCPPhoto3sizedforWeb.jpg',
+        ParkRating: 4,
+        Rating:4,
+        farAway: 2,
+        ParkPrice: 100,
+        ParkId: '0',
+        averageReview: 4,
+        NumberOfReviews: 100,
+        farAway: 2,
+        NumberOfSpaces: 10,
+        cordinates: {
+            lat: 6.9271,
+            log: 79.8612,
+        },
+        discount: 20,
+        parkFacilities: [
+        {name: 'EV Charging ',image:'https://zdwl-tec.com/wp-content/uploads/2023/09/0053-EV-Charging-Network-Construction-1-jpg.webp'}],
+        id: '3',
     
     },
 ];
