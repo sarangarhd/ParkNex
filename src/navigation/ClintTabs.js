@@ -8,6 +8,7 @@ import MyParkScreen from '../screens/MyParkScreen';
 import MyAccountScreen from '../screens/MyAccountScreen';
 import {colors, parameters} from '../global/Styles';
 import ParkMapScreen from '../screens/ParkMapScreen';
+import { ClientStack } from './clientStack';
 
 const clientTabs = createBottomTabNavigator();
 
@@ -33,7 +34,7 @@ export default function RootClintTabs() {
       />
       <clientTabs.Screen
         name="Search"
-        component={SearchScreen}
+        component={ClientStack}
         options={{
           tabBarLabel: 'Search',
           headerShown: false,

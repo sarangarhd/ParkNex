@@ -1,15 +1,18 @@
 import { height } from '@fortawesome/free-brands-svg-icons/fa42Group'
 import React from 'react'
 
+
 export const colors = {
   buttons:'#ff8c52',
   statusbar:'#ff8c52',
   headerText:'white',
   // grey4:'#424242',
   grey3:'#c7bfbf',
-  grey4:'#A9A9A9',
+  grey4:'#5c5c5c',
   grey2:'#E0E0E0',
+  grey1:'#808080',
   cardbackground:'#f0f0f0',
+  black:'#000000',
 
 }
 

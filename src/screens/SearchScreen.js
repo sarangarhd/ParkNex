@@ -14,9 +14,9 @@ import {colors} from '../global/Styles';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-export default function SearchScreen() {
+export default function SearchScreen({navigation}) {
   return (
-    <View style={{flex:1,marginBottom:10}}>
+    <View style={{flex: 1, marginBottom: 10}}>
       <SearchComponent />
       <View>
         <FlatList
@@ -24,7 +24,12 @@ export default function SearchScreen() {
           data={parkingData}
           keyExtractor={item => item.id}
           renderItem={({item}) => (
-            <TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                navigation.navigate('SearchResultScreen', {
+                  item: item.ParkName,
+                }); //navigate to SearchResultScreen
+              }}>
               <View style={styles.imageView}>
                 <ImageBackground
                   style={styles.image}
@@ -42,23 +47,28 @@ export default function SearchScreen() {
           showsVerticalScrollIndicator={false}
           numColumns={2}
           ListHeaderComponent={<Text style={styles.listHeder}>Parks</Text>}
-          ListFooterComponent={<Footer />}
+          ListFooterComponent={<Footer navigation={navigation}/>}
         />
       </View>
     </View>
   );
 }
 
-const Footer = () => {
+const Footer = ({ navigation }) => {
   return (
-    <View style={{marginTop: 10,marginBottom: 20}}>
+    <View style={{marginTop: 10, marginBottom: 20}}>
       <View style={{}}>
         <FlatList
           style={{marginBottom: 10}}
           data={parkingData}
           keyExtractor={item => item.id}
           renderItem={({item}) => (
-            <TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                navigation.navigate('SearchResultScreen', {
+                  item: item.ParkName,
+                }); //navigate to SearchResultScreen
+              }}>
               <View style={styles.imageView}>
                 <ImageBackground
                   style={styles.image}
