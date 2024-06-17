@@ -9,6 +9,7 @@ import {
   Pressable,
   Image,
   Dimensions,
+  StatusBar,
 } from 'react-native';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import HomeHeader from '../components/HomeHeader';
@@ -28,6 +29,11 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
+
+      {/* status bar color, -------- */}
+
+      <StatusBar backgroundColor={colors.grey2} barStyle="dark-content" />
+
       <HomeHeader navigation={navigation}/>
       <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={true}>
         <View
@@ -215,6 +221,7 @@ export default function HomeScreen({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop:20,
     // justifyContent: 'center',
     // alignItems: 'center'
   },

@@ -45,7 +45,8 @@ export default function ParkHeader({navigation, id}) {
       <ImageBackground
         style={styles.container}
         source={{uri: parkingData[id].images}}
-        imageStyle={styles.image}>
+        // imageStyle={styles.image}
+        >
         <View style={styles.view1}>
           <View style={styles.view2}>
             <Icon
@@ -86,10 +87,11 @@ export default function ParkHeader({navigation, id}) {
 
 const styles = StyleSheet.create({
   container: {height: 150},
-  image: {
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-  },
+
+  // image: {
+  //   borderTopLeftRadius: 5,
+  //   borderTopRightRadius: 5,
+  // },
 
   view1: {
     flexDirection: 'row',

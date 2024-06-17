@@ -56,7 +56,7 @@ export default function SearchScreen({navigation}) {
 
 const Footer = ({ navigation }) => {
   return (
-    <View style={{marginTop: 10, marginBottom: 20}}>
+    <View style={{marginTop: 10, marginBottom: 20,paddingTop:20}}>
       <View style={{}}>
         <FlatList
           style={{marginBottom: 10}}

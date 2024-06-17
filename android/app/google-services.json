@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "332883852347",
+    "project_id": "parknex-144f8",
+    "storage_bucket": "parknex-144f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332883852347:android:094f37f7d0ec1e4d52f01e",
+        "android_client_info": {
+          "package_name": "com.parknex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDY95JtRSDQjO9c5vtogt2cVLxUuNhFiR4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
