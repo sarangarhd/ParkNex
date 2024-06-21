@@ -10,6 +10,7 @@ import Swiper from 'react-native-swiper';
 
 
 
+
 export default function SignInWelcomeScreen({navigation}) {
   return (
     <View style={{flex:1}}>
@@ -69,7 +70,7 @@ export default function SignInWelcomeScreen({navigation}) {
             title="Create an Account"
             buttonStyle={styles.createButton}
             titleStyle={styles.createButtonTitle}
-            
+            onPress={()=>{navigation.navigate('SignUpScreen')}}
             />
         </View>
 

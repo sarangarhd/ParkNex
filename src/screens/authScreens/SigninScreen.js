@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef,useContext} from 'react';
 import {
   View,
   Text,
@@ -16,10 +16,23 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {create} from 'react-test-renderer';
 import {Formik} from 'formik';
 import auth from '@react-native-firebase/auth';
+import { SignInContext } from '../../context/authContext';
+import {HomeScreen} from '../HomeScreen';
 
-export default function SigninScreen({navigation, dispatchSignedIn}) {
+
+
+
+
+
+
+
+
+export default function SigninScreen({navigation, }) {
+
+
+const {dispatchSignedIn}= useContext(SignInContext)
+
   const [textinput2Fossued, setTextinput2Fossued] = useState(false);
-
   const textinput1 = useRef(1);
   const textinput2 = useRef(2);
   //-------------------------
@@ -30,8 +43,9 @@ export default function SigninScreen({navigation, dispatchSignedIn}) {
     const {password,email} = data
     const user = await auth().signInWithEmailAndPassword(email,password)
     if(user){
-        // dispatchSignedIn({type:"UPDATE_SIGN_IN",payload:{userToken:"signed-in"}})
-        console.log('user signed in successfully')
+        dispatchSignedIn({type:"UPDATE_SIGN_IN",payload:{userToken:"signed-in"}})
+        
+        // console.log(user)
     }
 }
     catch(error){
@@ -49,6 +63,7 @@ export default function SigninScreen({navigation, dispatchSignedIn}) {
 
   return (
     <View style={styles.container}>
+      
       <Header
         title={'MY ACCOUNT'}
         type={'arrow-left'}
@@ -69,7 +84,7 @@ export default function SigninScreen({navigation, dispatchSignedIn}) {
 
       <Formik
         initialValues={{email: '', password: ''}}
-        onSubmit={values => {
+        onSubmit={(values) => {
           signIn(values)
         }}>
         { (props)=>
@@ -197,6 +212,7 @@ export default function SigninScreen({navigation, dispatchSignedIn}) {
           title="Create an Account"
           buttonStyle={styles.createButton}
           titleStyle={styles.createButtonTitle}
+          onPress={()=>{navigation.navigate('SignUpScreen')}}
         />
       </View>
     </View>
