@@ -1,0 +1,60 @@
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+
+const parkingLocations = [
+  {
+    id: 1,
+    title: 'Parking Lot 1',
+    description: 'Near the main entrance',
+    latitude: 37.78825,
+    longitude: -122.4324,
+  },
+  {
+    id: 2,
+    title: 'Parking Lot 2',
+    description: 'Close to the lake',
+    latitude: 37.78845,
+    longitude: -122.4325,
+  },
+  // Add more parking locations as needed
+];
+
+export default function ParkMapScreen() {
+  return (
+    <View style={styles.container}>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 37.78825,
+          longitude: -122.4324,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      >
+        {parkingLocations.map(location => (
+          <Marker
+            key={location.id}
+            coordinate={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }}
+            title={location.title}
+            description={location.description}
+          />
+        ))}
+      </MapView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+});

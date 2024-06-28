@@ -4,6 +4,7 @@ import { colors } from '../global/Styles'
 
 
 
+
 const FacilityCard = ({ParkName,ParkPrice,images}) => {
   return (
     <View style = {styles.view1}>

@@ -1,51 +1,56 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import auth from '@react-native-firebase/auth';
-
+import database from '@react-native-firebase/database';
 import {
   View,
   Text,
-  Linking,
-  Pressable,
-  Image,
-  Dimensions,
   Alert,
   Switch,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import {
   DrawerContentScrollView,
   DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
-import {Avatar, Button, Icon} from 'react-native-elements';
-import {colors} from '../global/Styles';
+import { Avatar, Icon } from 'react-native-elements';
+import { colors } from '../global/Styles';
 import { SignInContext } from '../context/authContext';
 
 export default function DrawerContent(props) {
-  const {dispatchSignedIn} = useContext(SignInContext)
+  const { dispatchSignedIn } = useContext(SignInContext);
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const user = auth().currentUser;
+    if (user) {
+      const userRef = database().ref(`/users/${user.uid}`);
+      userRef.once('value').then(snapshot => {
+        setUserData(snapshot.val());
+      }).catch(error => {
+        console.error("Error fetching user data: ", error);
+      });
+    }
+  }, []);
 
   async function signOut() {
-    
     try {
-      auth().signOut().then(() => {console.log("USER SUCCESSFULLY SIGNED OUT")});
-      dispatchSignedIn({type:"UPDATE_SIGN_IN",payload:{userToken:null}})
+      await auth().signOut();
+      dispatchSignedIn({ type: "UPDATE_SIGN_IN", payload: { userToken: null } });
+      console.log("USER SUCCESSFULLY SIGNED OUT");
     } catch (err) {
       Alert.alert(err.code);
     }
-
   }
-
 
   return (
     <View style={styles.container}>
       <DrawerContentScrollView {...props}>
-        <View style={{backgroundColor: colors.buttons}}>
+        <View style={{ backgroundColor: colors.buttons }}>
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-
               paddingLeft: 20,
               paddingVertical: 10,
             }}>
@@ -53,9 +58,9 @@ export default function DrawerContent(props) {
               rounded
               avatarStyle={styles.avatar}
               size={75}
-              source={{uri: 'https://www.w3schools.com/w3images/avatar2.png'}}
+              source={{ uri: userData ? userData.avatar : 'https://www.w3schools.com/w3images/avatar2.png' }}
             />
-            <View style={{marginLeft: 10}}>
+            <View style={{ marginLeft: 10 }}>
               <Text
                 style={{
                   fontSize: 20,
@@ -63,10 +68,10 @@ export default function DrawerContent(props) {
                   fontWeight: 'bold',
                   color: colors.cardbackground,
                 }}>
-                SARANGA
+                {userData ? userData.name : 'Loading...'}
               </Text>
-              <Text style={{color: colors.cardbackground, fontSize: 15}}>
-                saranga@gmail.com
+              <Text style={{ color: colors.cardbackground, fontSize: 15 }}>
+                {userData ? userData.email : 'Loading...'}
               </Text>
             </View>
           </View>
@@ -76,7 +81,7 @@ export default function DrawerContent(props) {
               justifyContent: 'space-evenly',
               paddingBottom: 10,
             }}>
-            <View style={{marginTop: 10, flexDirection: 'row'}}>
+            <View style={{ marginTop: 10, flexDirection: 'row' }}>
               <View
                 style={{
                   marginLeft: 10,
@@ -89,15 +94,15 @@ export default function DrawerContent(props) {
                     fontSize: 18,
                     color: colors.cardbackground,
                   }}>
-                  1
+                  {userData ? userData.vehicle_number : 'Loading...'}
                 </Text>
-                <Text style={{fontSize: 14, color: colors.cardbackground}}>
+                <Text style={{ fontSize: 14, color: colors.cardbackground }}>
                   My Vehicle
                 </Text>
               </View>
             </View>
 
-            <View style={{marginTop: 10, flexDirection: 'row'}}>
+            <View style={{ marginTop: 10, flexDirection: 'row' }}>
               <View
                 style={{
                   marginLeft: 10,
@@ -110,9 +115,9 @@ export default function DrawerContent(props) {
                     fontSize: 18,
                     color: colors.cardbackground,
                   }}>
-                  1
+                  {userData ? userData.notifications : 'Loading...'}
                 </Text>
-                <Text style={{fontSize: 14, color: colors.cardbackground}}>
+                <Text style={{ fontSize: 14, color: colors.cardbackground }}>
                   Notifications
                 </Text>
               </View>
@@ -124,68 +129,59 @@ export default function DrawerContent(props) {
 
         <DrawerItem
           label="Payment"
-          icon={({color, size}) => (
+          icon={({ color, size }) => (
             <Icon name="payment" color={color} size={size} />
           )}
         />
 
         <DrawerItem
-          label="Prmotions"
-          icon={({color, size}) => (
+          label="Promotions"
+          icon={({ color, size }) => (
             <Icon name="local-offer" color={color} size={size} />
           )}
         />
 
         <DrawerItem
           label="Settings"
-          icon={({color, size}) => (
+          icon={({ color, size }) => (
             <Icon name="settings" color={color} size={size} />
           )}
         />
 
         <DrawerItem
           label="Help"
-          icon={({color, size}) => (
+          icon={({ color, size }) => (
             <Icon name="help" color={color} size={size} />
           )}
         />
 
-        <View style={{borderTopWidth: 1, borderTopColor: colors.grey4}}>
+        <View style={{ borderTopWidth: 1, borderTopColor: colors.grey4 }}>
           <Text style={styles.preferences}>Preferences</Text>
 
           <View style={styles.switchText}>
             <Text style={styles.darkthemeText}>Dark Theme</Text>
 
-            <View style={{paddingRight:10}}>
-                <Switch
-                    trackColor={{false:'#767577', true: '#81b0ff'}}
-                    thumbColor= '#f4f3f4'
-                />
+            <View style={{ paddingRight: 10 }}>
+              <Switch
+                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                thumbColor='#f4f3f4'
+              />
             </View>
           </View>
-
         </View>
-
-
       </DrawerContentScrollView>
 
-      
       <DrawerItem
-          label="Sign Out"
-          icon={({color, size}) => (
-            <Icon 
-            name="logout" 
-            color={color} 
-            size={size} 
-            
-            />
-          )}
-          onPress={signOut}
-        />
-      
-
-
-        
+        label="Sign Out"
+        icon={({ color, size }) => (
+          <Icon
+            name="logout"
+            color={color}
+            size={size}
+          />
+        )}
+        onPress={signOut}
+      />
     </View>
   );
 }
@@ -215,7 +211,8 @@ const styles = StyleSheet.create({
   darkthemeText: {
     fontSize: 16,
     color: 'grey',
-    paddingLeft:0,
+    paddingLeft: 0,
     fontWeight: 'bold',
   },
 });
+1

@@ -1,17 +1,17 @@
-import {StyleSheet, Text, View, ScrollView, TextInput,Button,Alert} from 'react-native';
 import React, {useState} from 'react';
+import {View, Text, ScrollView, TextInput, Button, Alert, StyleSheet} from 'react-native';
 import {colors} from '../../global/Styles';
 import Header from '../../components/Header';
 import {Formik} from 'formik';
 import {Icon} from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';
 import auth from '@react-native-firebase/auth';
-
+import database from '@react-native-firebase/database';
 
 const initialValues = {
   phone_number: '',
   name: '',
-  family_name: '',
+  vehicle_number: '',
   password: '',
   email: '',
   username: '',
@@ -21,37 +21,43 @@ const SignUpScreen = ({navigation}) => {
   const [passwordFocussed, setPassordFocussed] = useState(false);
   const [passwordBlured, setPasswordBlured] = useState(false);
 
-  async function signUp(values){
-    const {email,password} = values
-  
-    try{
-      await auth().createUserWithEmailAndPassword(email,password)
-      console.log("USER ACCOUNT CREATED")
-    }catch(error){
-      if(error.code === 'auth/email-already-in-use'){
-        Alert.alert(
-          'That email address is already inuse'
-        )
+  async function signUp(values) {
+    const {email, password, phone_number, name, vehicle_number} = values;
+    const defaultAvatar = "https://www.w3schools.com/w3images/avatar2.png";  // Default avatar URL
+
+    try {
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+      console.log("USER ACCOUNT CREATED");
+
+      // Save user details in Firebase Realtime Database
+      await database().ref(`/users/${user.uid}`).set({
+        phone_number,
+        name,
+        vehicle_number,
+        email,
+        user_role: 'user',  // Add default user role 
+        avatar: defaultAvatar , // Set default avatar
+        notifications:0
+      });
+
+      console.log("USER DETAILS SAVED TO DATABASE");
+    } catch (error) {
+      console.error("ERROR SAVING USER DETAILS:", error);
+      if (error.code === 'auth/email-already-in-use') {
+        Alert.alert('That email address is already in use');
       }
-      if(error.code === 'auth/invalid-email'){
-        Alert.alert(
-          'That email address is invalid'
-        )
-      }
-      else{
-        Alert.alert(error.code)
+      if (error.code === 'auth/invalid-email') {
+        Alert.alert('That email address is invalid');
+      } else {
+        Alert.alert(error.code);
       }
     }
   }
-  // ------------------------------------------------------
 
   return (
     <View style={styles.container}>
-      <Header
-        title={'MY ACCOUNT'}
-        type={'arrow-left'}
-        navigation={navigation}
-      />
+      <Header title={'MY ACCOUNT'} type={'arrow-left'} navigation={navigation} />
       <ScrollView keyboardShouldPersistTaps="always">
         <View style={styles.view1}>
           <Text style={styles.text1}>Sign-Up</Text>
@@ -60,13 +66,13 @@ const SignUpScreen = ({navigation}) => {
           initialValues={initialValues}
           onSubmit={values => {
             signUp(values);
-          }}>
+          }}
+        >
           {props => (
             <View style={styles.view2}>
               <View>
                 <Text style={styles.text2}>New on PARKNEX?</Text>
               </View>
-
               <View style={styles.view6}>
                 <TextInput
                   placeholder="Phone Number"
@@ -86,17 +92,15 @@ const SignUpScreen = ({navigation}) => {
                   value={props.values.name}
                 />
               </View>
-
               <View style={styles.view6}>
                 <TextInput
-                  placeholder="Family name"
+                  placeholder="Vehicle Number"
                   style={styles.input1}
                   autoFocus={false}
-                  onChangeText={props.handleChange('family_name')}
-                  value={props.values.family_name}
+                  onChangeText={props.handleChange('vehicle_number')}
+                  value={props.values.vehicle_number}
                 />
               </View>
-              {/* -------------------------------------------------------------------------------- */}
               <View style={styles.view10}>
                 <View>
                   <Icon
@@ -116,7 +120,6 @@ const SignUpScreen = ({navigation}) => {
                   />
                 </View>
               </View>
-              {/* ------------------------------------------------------ */}
               <View style={styles.view14}>
                 <Animatable.View
                   animation={passwordFocussed ? 'fadeInRight' : 'fadeInLeft'}
@@ -147,7 +150,6 @@ const SignUpScreen = ({navigation}) => {
                   />
                 </Animatable.View>
               </View>
-              {/* ----------------------------------------------------- */}
               <View style={styles.view15}>
                 <Text style={styles.text3}>
                   By creating or logging into an account you are
@@ -167,7 +169,6 @@ const SignUpScreen = ({navigation}) => {
                   onPress={props.handleSubmit}
                 />
               </View>
-              {/* ----------------------------------------------------- */}
             </View>
           )}
         </Formik>
@@ -180,7 +181,6 @@ export default SignUpScreen;
 
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: 'white'},
-
   view1: {
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -188,19 +188,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 15,
   },
-
   text1: {fontSize: 22, color: colors.buttons, fontWeight: 'bold'},
-
   view2: {
     justifyContent: 'flex-start',
     backgroundColor: 'white',
     paddingHorizontal: 15,
   },
-
   view3: {marginTop: 5, marginBottom: 10},
-
   text2: {fontSize: 15, color: colors.grey2},
-
   view4: {
     flexDirection: 'row',
     borderWidth: 1,
@@ -208,11 +203,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingLeft: 5,
   },
-
   view5: {marginLeft: 30, marginTop: 20},
-
   input1: {fontSize: 16},
-
   view6: {
     flexDirection: 'row',
     borderWidth: 1,
@@ -222,11 +214,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: 48,
   },
-
   view7: {marginLeft: 0, maxWidth: '65%'},
-
   input2: {fontSize: 16, marginLeft: 0, marginBottom: 0},
-
   view8: {
     flexDirection: 'row',
     borderWidth: 1,
@@ -236,11 +225,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: 48,
   },
-
   view9: {marginLeft: 0, maxWidth: '65%'},
-
   input3: {fontSize: 16, marginLeft: 0, marginBottom: 0},
-
   view10: {
     flexDirection: 'row',
     borderWidth: 1,
@@ -250,7 +236,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: 48,
   },
-
   email: {
     fontSize: 24,
     padding: 0,
@@ -258,13 +243,9 @@ const styles = StyleSheet.create({
     marginTop: 11,
     marginLeft: 2,
   },
-
   view11: {marginLeft: 30, maxWidth: '65%'},
-
   input4: {fontSize: 16, marginLeft: -20, marginBottom: -10},
-
   view13: {flexDirection: 'row', height: 40},
-
   view14: {
     borderWidth: 1,
     borderRadius: 12,
@@ -276,15 +257,10 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     marginTop: 20,
   },
-
   view15: {alignItems: 'center', justifyContent: 'center', marginTop: 10},
-
   text3: {fontSize: 13},
-
   view16: {flexDirection: 'row'},
-
   text4: {textDecorationLine: 'underline', color: 'green', fontSize: 13},
-
   button1: {
     backgroundColor: colors.buttons,
     alignContent: 'center',
@@ -296,7 +272,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     width: '100%',
   },
-
   title1: {
     color: 'white',
     fontSize: 20,
@@ -305,24 +280,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: -3,
   },
-
   view17: {marginVertical: 10, marginTop: 30},
-
   view18: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingTop: 15,
   },
-
   text5: {fontSize: 15, fontWeight: 'bold'},
-
   view19: {backgroundColor: 'white', paddingHorizontal: 15},
-
   view20: {marginTop: 5},
-
   view21: {marginTop: 5, alignItems: 'flex-end'},
-
   button2: {
     backgroundColor: colors.background3,
     alignContent: 'center',
@@ -334,7 +302,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     // width:'100%'
   },
-
   title2: {
     color: colors.buttons,
     fontSize: 16,

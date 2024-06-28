@@ -1,50 +1,91 @@
-
-// ParkScreen.js
-
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-
-const initialParkData = [
-  { id: 'A-1', status: 'BOOKED' },
-  { id: 'A-2', status: 'BOOKED' },
-  { id: 'A-3', status: 'BOOKED' },
-  { id: 'A-4', status: 'AVAILABLE' },
-  { id: 'A-5', status: 'BOOKED' },
-  { id: 'A-6', status: 'BOOKED' },
-  { id: 'A-7', status: 'BOOKED' },
-  { id: 'A-8', status: 'BOOKED' },
-];
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, Alert } from 'react-native';
+import database from '@react-native-firebase/database';
 
 const ParkScreen = ({ navigation }) => {
-  const [parkData, setParkData] = useState(initialParkData);
+  const [parkData, setParkData] = useState([]);
+  const [bookingEnabled, setBookingEnabled] = useState(true);
 
-  const handlePress = (id) => {
-    const updatedParkData = parkData.map((slot) =>
-      slot.id === id ? { ...slot, status: 'BOOKED' } : slot
-    );
-    setParkData(updatedParkData);
+  useEffect(() => {
+    const fetchParkData = async () => {
+      try {
+        const ref = database().ref('/slots');
+        ref.on('value', (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            const formattedData = Object.keys(data).map((key) => ({
+              id: key,
+              status: data[key],
+            }));
+            setParkData(formattedData);
+          } else {
+            setParkData([]);
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    };
+
+    fetchParkData();
+  }, []);
+
+  const handlePress = async (id) => {
+    if (!bookingEnabled) {
+      alert('Booking is temporarily disabled.');
+      return;
+    }
+    try {
+      const ref = database().ref(`/slots/${id}`);
+      await ref.set(false); // Update the status to 'false' (BOOKED)
+      setParkData((prevData) =>
+        prevData.map((slot) => (slot.id === id ? { ...slot, status: false } : slot))
+      );
+    } catch (error) {
+      console.error('Error updating data: ', error);
+    }
+  };
+
+  const handleBooking = () => {
+    if (!bookingEnabled) {
+      alert('Booking is temporarily disabled.');
+      return;
+    }
+    const availableSlot = parkData.find((slot) => slot.status);
+    if (availableSlot) {
+      handlePress(availableSlot.id);
+    } else {
+      alert('No available slots to book.');
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Parking Slots</Text>
-      <Text style={styles.subHeader}>1st Floor</Text>
-      <View style={styles.parkingArea}>
-        {parkData.map((slot) => (
-          <View key={slot.id} style={styles.slotContainer}>
-            <TouchableOpacity
-              style={[
-                styles.slot,
-                slot.status === 'BOOKED' ? styles.booked : styles.available,
-              ]}
-              onPress={() => slot.status === 'AVAILABLE' && handlePress(slot.id)}
-              disabled={slot.status === 'BOOKED'}
-            >
-              <Text style={styles.slotText}>{slot.id}</Text>
-              <Text style={styles.statusText}>{slot.status}</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.header}>Parking Slots</Text>
+        <Text style={styles.subHeader}>1st Floor</Text>
+        <View style={styles.parkingArea}>
+          {parkData.map((slot) => (
+            <View key={slot.id} style={styles.slotContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.slot,
+                  slot.status ? styles.available : styles.booked,
+                ]}
+                onPress={() => slot.status && handlePress(slot.id)}
+                disabled={!slot.status || !bookingEnabled}
+              >
+                <Text style={styles.slotText}>{slot.id}</Text>
+                <Text style={styles.statusText}>
+                  {slot.status ? 'AVAILABLE' : 'BOOKED'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+      <View style={styles.buttonContainer}>
+        <Button title="Book Now" onPress={handleBooking} disabled={!bookingEnabled} />
       </View>
     </View>
   );
@@ -56,13 +97,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 20,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
+    marginVertical: 10,
   },
   subHeader: {
     fontSize: 18,
@@ -73,6 +118,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
+    width: '100%',
   },
   slotContainer: {
     width: '45%',
@@ -101,119 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#757575',
   },
+  buttonContainer: {
+    margin: 20,
+  },
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// //menu card create----
-
-// import React from 'react';
-// import {Text,View,Image,StyleSheet} from 'react-native';
-// import { colors } from '../global/Styles';
-
-
-
-
-
-
-
-// export default function SlotCard({ParkName,parkFacilities,ParkAddress,images}) {
-//   return (
-//     <View style ={styles.view1}>
-//     <View style ={styles.view2}>
-//         <View style ={styles.view3}>
-//             <Text style ={styles.text1}>{ParkName}</Text>
-//             <View>
-//                 <Text style ={styles.text2}>{parkFacilities}</Text>
-//             </View>
-//             <Text style = {styles.text3}> {ParkAddress}</Text>
-//         </View>
-//         <View style ={{flex:2}}>
-//              <Image style ={styles.image} source ={{uri:images}} />
-//         </View>
-//     </View>
-// </View>
-//   )
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const styles =StyleSheet.create({
-
-//     view1:{backgroundColor:"white",
-//             elevation:4,
-//             shadowOpacity:0.4,
-//             shadowColor:"black",
-//             margin:5,
-//             padding:10
-// },
-
-// view2: {flex:1,
-//         flexDirection:"row",
-//         padding:0,
-//         justifyContent:"space-between"
-// },
-
-// view3 :{flex:6,
-//         justifyContent:"space-between"
-//         },
-
-// text1: {
-//     fontSize:15,
-//     color:colors.grey1,
-//     fontWeight:"bold"
-//     },
-
-//     text2:{
-//         fontSize:15,
-//         color:colors.grey3,
-//         marginRight:2
-//      },
-
-// text3:{
-//     fontSize:15,
-//     color:colors.black,
-//     },
-
-// image:{flex:1
-//     }
-// })

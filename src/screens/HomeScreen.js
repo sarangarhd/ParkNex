@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,94 +11,102 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
-// import Icon from 'react-native-vector-icons/FontAwesome';
 import HomeHeader from '../components/HomeHeader';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {colors, parameters} from '../global/Styles';
-import {filterData, parkingData} from '../global/Data';
+import { colors, parameters } from '../global/Styles';
+import { filterData, parkingData as nearestParkingData } from '../global/Data';
 import ParkCard from '../components/ParkCard';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import database from '@react-native-firebase/database';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-export default function HomeScreen({navigation}) {
-  // think of park as a state................
-
+export default function HomeScreen({ navigation }) {
   const [park, setPark] = useState(true);
   const [indexCheck, setIndexCheck] = useState('0');
+  const [publicParkingData, setPublicParkingData] = useState([]);
+
+  useEffect(() => {
+    const fetchPublicParkingData = async () => {
+      try {
+        const ref = database().ref('/PublicparkingData');
+        ref.on('value', snapshot => {
+          const data = snapshot.val();
+          if (data) {
+            const formattedData = Object.keys(data).map(key => ({
+              ...data[key],
+              id: key,
+            }));
+            setPublicParkingData(formattedData);
+          } else {
+            setPublicParkingData([]);
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching parking data: ', error);
+      }
+    };
+
+    fetchPublicParkingData();
+  }, []);
 
   return (
     <View style={styles.container}>
-
-      {/* status bar color, -------- */}
-
       <StatusBar backgroundColor={colors.grey2} barStyle="dark-content" />
 
-      <HomeHeader navigation={navigation}/>
+      <HomeHeader navigation={navigation} />
       <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={true}>
-        <View
-          style={{backgroundColor: colors.cardbackground, paddingBottom: 10}}>
-          <View
-            style={{
-              marginTop: 15,
-              flexDirection: 'row',
-              justifyContent: 'space-evenly',
-            }}>
+        <View style={{ backgroundColor: colors.cardbackground, paddingBottom: 10 }}>
+          <View style={{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-evenly' }}>
             <TouchableOpacity onPress={() => setPark(true)}>
               <View
                 style={{
                   ...styles.parkButton,
                   backgroundColor: park ? colors.buttons : colors.grey3,
                 }}>
-                <Text style={{...styles.parkText}}>Park</Text>
+                <Text style={{ ...styles.parkText }}>Park</Text>
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() =>{ setPark(false)
-            navigation.navigate('ParkMapScreen')
-            }}>
+            <TouchableOpacity
+              onPress={() => {
+                setPark(false);
+                navigation.navigate('ParkMapScreen');
+              }}>
               <View
                 style={{
                   ...styles.parkButton,
                   backgroundColor: park ? colors.grey3 : colors.buttons,
                 }}>
-                <Text style={{...styles.parkText}}>Reserve Parking</Text>
+                <Text style={{ ...styles.parkText }}>Reserve Parking</Text>
               </View>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* --------------start filter view--------------- */}
         <View style={styles.filterView}>
           <View style={styles.addresView}>
             <View style={styles.map}>
               <Icon name="map-marker" color={colors.buttons} size={25} />
-              <Text style={{marginLeft: 5}}>No:27,Colombo-01</Text>
+              <Text style={{ marginLeft: 5 }}>No:27,Colombo-01</Text>
             </View>
-            {/* -- */}
             <View style={styles.clock}>
               <Icon name="clock-o" color={colors.buttons} size={25} />
-              <Text style={{marginLeft: 5}}>Now</Text>
+              <Text style={{ marginLeft: 5 }}>Now</Text>
             </View>
           </View>
 
           <View>
             <TouchableOpacity>
-              <Icon
-                name="cogs"
-                color={colors.buttons}
-                type={'font-awesome'}
-                size={25}
-              />
+              <Icon name="cogs" color={colors.buttons} type={'font-awesome'} size={25} />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* ----------------------------- */}
         <View style={styles.headerTextView}>
           <Text style={styles.headerText}>Services</Text>
         </View>
-        {/* --------------------------------------- */}
+
         <View>
           <FlatList
             horizontal={true}
@@ -106,28 +114,19 @@ export default function HomeScreen({navigation}) {
             data={filterData}
             keyExtractor={item => item.id}
             extraData={indexCheck}
-            renderItem={({item, index}) => (
-              <Pressable
-                onPress={() => {
-                  setIndexCheck(item.id);
-                }}>
+            renderItem={({ item, index }) => (
+              <Pressable onPress={() => setIndexCheck(item.id)}>
                 <View
                   style={
-                    indexCheck === item.id
-                      ? {...styles.smallCardSelected}
-                      : {...styles.smallcard}
+                    indexCheck === item.id ? { ...styles.smallCardSelected } : { ...styles.smallcard }
                   }>
-                  <Image
-                    source={item.Image}
-                    style={{width: 60, height: 60, borderRadius: 15}}
-                  />
-
+                  <Image source={item.Image} style={{ width: 60, height: 60, borderRadius: 15 }} />
                   <View>
                     <Text
                       style={
                         indexCheck === item.id
-                          ? {...styles.smallCardTextSelected}
-                          : {...styles.smallCardText}
+                          ? { ...styles.smallCardTextSelected }
+                          : { ...styles.smallCardText }
                       }>
                       {item.name}
                     </Text>
@@ -137,21 +136,19 @@ export default function HomeScreen({navigation}) {
             )}
           />
         </View>
-        {/* ------------------ */}
 
-        {/* -=-change the order folloing, after make home page--- */}
         <View style={styles.headerTextView}>
           <Text style={styles.headerText}>Nearest parking</Text>
         </View>
-        {/* --------------------------------- */}
+
         <View>
           <FlatList
-            style={{marginBottom: 10, marginTop: 10}}
+            style={{ marginBottom: 10, marginTop: 10 }}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            data={parkingData}
+            data={nearestParkingData}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({item}) => (
+            renderItem={({ item }) => (
               <View>
                 <ParkCard
                   ScreenWidth={SCREEN_WIDTH * 0.8}
@@ -166,21 +163,19 @@ export default function HomeScreen({navigation}) {
             )}
           />
         </View>
-        {/* ------------------------------- */}
 
         <View style={styles.headerTextView}>
-          <Text style={styles.headerText}>Nearest parking</Text>
+          <Text style={styles.headerText}>Public parking</Text>
         </View>
 
-        {/* ------------------------------- */}
         <View>
           <FlatList
-            style={{marginBottom: 10, marginTop: 10}}
+            style={{ marginBottom: 10, marginTop: 10 }}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            data={parkingData}
+            data={publicParkingData}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({item}) => (
+            renderItem={({ item }) => (
               <View>
                 <ParkCard
                   ScreenWidth={SCREEN_WIDTH * 0.8}
@@ -195,25 +190,16 @@ export default function HomeScreen({navigation}) {
             )}
           />
         </View>
-        {/* ------------------------------------------- */}
-
-        {/* --removed code , it paste bu.text-no workkkk */}
       </ScrollView>
-      {/* --------google map floating action----------- */}
 
-      { park &&
+      {park && (
         <View style={styles.floatButton}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ParkMapScreen');
-            }}>
+          <TouchableOpacity onPress={() => navigation.navigate('ParkMapScreen')}>
             <Icon name="map-marker" color={colors.buttons} size={32} />
             <Text>Map</Text>
           </TouchableOpacity>
         </View>
-      }
-
-      {/* ------------------- */}
+      )}
     </View>
   );
 }
@@ -221,9 +207,6 @@ export default function HomeScreen({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop:20,
-    // justifyContent: 'center',
-    // alignItems: 'center'
   },
   parkButton: {
     paddingHorizontal: 20,
@@ -232,7 +215,6 @@ const styles = StyleSheet.create({
   },
   parkText: {
     alignItems: 'center',
-    // marginLeft:5,
     fontSize: 16,
   },
   filterView: {
