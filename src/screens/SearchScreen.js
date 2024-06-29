@@ -76,7 +76,7 @@ export default function SearchScreen({ navigation }) {
           <TouchableWithoutFeedback
             onPress={() => {
               navigation.navigate('SearchResultScreen', {
-                item: item.ParkName,
+                parkName: item.ParkName,
               });
             }}>
             <View style={styles.imageView}>
@@ -113,7 +113,7 @@ const Footer = ({ navigation, data }) => {
           <TouchableWithoutFeedback
             onPress={() => {
               navigation.navigate('SearchResultScreen', {
-                item: item.ParkName,
+                parkName: item.ParkName,
               });
             }}>
             <View style={styles.imageView}>

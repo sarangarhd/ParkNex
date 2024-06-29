@@ -39,7 +39,7 @@ const SearchResultCard = ({
             </View>
             <View style={{ flexDirection: 'row' }}>
               <View style={styles.view4}>
-                <Text style={styles.view5}>{farAway}Min</Text>
+                <Text style={styles.view5}>{farAway} Min</Text>
               </View>
               <View style={{ flex: 9 }}>
                 <Text style={styles.text6}>{parkAddress}</Text>
@@ -53,7 +53,7 @@ const SearchResultCard = ({
           style={{ backgroundColor: colors.cardbackground }}
           data={parkFacilityData}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => (
+          renderItem={({ item }) => (
             <FacilityCard images={item.image} ParkName={item.name} />
           )}
           horizontal={true}

@@ -1,16 +1,34 @@
 import {StyleSheet, Text, View, ImageBackground, Animated} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {colors} from '../global/Styles';
-import {parkingData} from '../global/Data';
 import {Icon} from 'react-native-elements';
+import firebase from '../firebase'; // Import firebase to fetch data
 
 export default function ParkHeader({navigation, id}) {
-
   const index2 = 10;
   const currentValue = new Animated.Value(1);
   const [liked, setLiked] = useState(false);
   const [counter, setCounter] = useState(-2);
   const [visible, setVisible] = useState(false);
+  const [imageUrl, setImageUrl] = useState('https://www.w3schools.com/w3images/avatar2.png'); // Default image URL
+
+  useEffect(() => {
+    const fetchParkingData = async () => {
+      try {
+        const parkRef = firebase.database().ref(`parkingData/${id}`);
+        const parkSnapshot = await parkRef.once('value');
+        const parkData = parkSnapshot.val();
+
+        if (parkData && parkData.images) {
+          setImageUrl(parkData.images);
+        }
+      } catch (error) {
+        console.error('Error fetching park data: ', error);
+      }
+    };
+
+    fetchParkingData();
+  }, [id]);
 
   const likeHander = () => {
     if (liked == false) setVisible(true);
@@ -19,7 +37,7 @@ export default function ParkHeader({navigation, id}) {
   };
 
   useEffect(() => {
-    if (liked == true) {
+    if (liked === true) {
       Animated.spring(currentValue, {
         toValue: 3,
         friction: 2,
@@ -36,14 +54,11 @@ export default function ParkHeader({navigation, id}) {
     }
   }, [liked]);
 
-  const imageUrl = parkingData[id]?.images || 'https://www.w3schools.com/w3images/avatar2.png'; // Default image URL if none provided
-
   return (
     <View style={styles.container}>
       <ImageBackground
         style={styles.container}
         source={{uri: imageUrl}}
-        // imageStyle={styles.image}
       >
         <View style={styles.view1}>
           <View style={styles.view2}>
@@ -80,11 +95,6 @@ export default function ParkHeader({navigation, id}) {
 
 const styles = StyleSheet.create({
   container: {height: 150},
-
-  // image: {
-  //   borderTopLeftRadius: 5,
-  //   borderTopRightRadius: 5,
-  // },
 
   view1: {
     flexDirection: 'row',

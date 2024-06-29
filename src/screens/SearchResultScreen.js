@@ -7,6 +7,7 @@ import {colors} from '../global/Styles';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const SearchResultScreen = ({navigation, route}) => {
+  const { parkName } = route.params;
   const [parkingData, setParkingData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +47,7 @@ const SearchResultScreen = ({navigation, route}) => {
             style={{backgroundColor: colors.cardbackground}}
             data={parkingData}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({item, index}) => (
+            renderItem={({item}) => (
               <SearchResultCard
                 ScreenWidth={SCREEN_WIDTH}
                 images={item.images || 'https://example.com/default-image.jpg'}
@@ -59,7 +60,7 @@ const SearchResultScreen = ({navigation, route}) => {
                 parkFacilities={item.parkFacilities}
                 OnPresParkCard={() => {
                   navigation.navigate('ParkHomeScreen', {
-                    id: item.id,
+                    parkId: item.id,
                     park: item.ParkName,
                   });
                 }}
@@ -68,7 +69,7 @@ const SearchResultScreen = ({navigation, route}) => {
             ListHeaderComponent={
               <View>
                 <Text style={styles.listHeader}>
-                  {parkingData.length} Result for {route.params.item}
+                  {parkingData.length} Results for "{parkName}"
                 </Text>
               </View>
             }

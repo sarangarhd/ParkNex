@@ -6,37 +6,37 @@ import { colors } from '../global/Styles';
 const SlotDetailsScreen = ({ route }) => {
   const { parkId } = route.params;
   const [slots, setSlots] = useState([]);
+  const [parkName, setParkName] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(`Fetching slots for parkId: ${parkId}`); // Log parkId
-
-    const fetchSlots = async () => {
+    const fetchParkData = async () => {
       try {
-        const slotsRef = firebase.database().ref(`parkingData/Park${parkId}/slots`);
-        slotsRef.on('value', (snapshot) => {
-          const data = snapshot.val();
-          console.log('Fetched data:', data); // Log fetched data
-          if (data) {
-            const formattedData = Object.keys(data).map((key) => ({
+        const parkRef = firebase.database().ref(`parkingData/${parkId}`);
+        const parkSnapshot = await parkRef.once('value');
+        const parkData = parkSnapshot.val();
+
+        if (parkData) {
+          setParkName(parkData.ParkName || 'Unknown Park');
+          if (parkData.slots) {
+            const formattedData = Object.keys(parkData.slots).map((key) => ({
               slotId: key,
-              available: data[key],
+              available: parkData.slots[key],
             }));
-            console.log('Formatted data:', formattedData); // Log formatted data
             setSlots(formattedData);
-          } else {
-            console.log('No data available'); // Log when no data is available
-            setSlots([]);
           }
-          setLoading(false);
-        });
+        } else {
+          setParkName('No park data found');
+          setSlots([]);
+        }
       } catch (error) {
-        console.error('Error fetching slot data:', error);
+        console.error('Error fetching park data:', error);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchSlots();
+    fetchParkData();
   }, [parkId]);
 
   const renderItem = ({ item }) => (
@@ -63,7 +63,7 @@ const SlotDetailsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Slot Details for Park {parkId}</Text>
+      <Text style={styles.title}>Slot Details for {parkName}</Text>
       {slots.length > 0 ? (
         <FlatList
           data={slots}

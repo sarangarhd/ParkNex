@@ -11,7 +11,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const initialLayout = SCREEN_WIDTH;
 
 const ParkHomeScreen = ({ navigation, route }) => {
-  const { id, park } = route.params;
+  const { parkId, park } = route.params;
   const [parkingData, setParkingData] = useState(null);
   const [ownerData, setOwnerData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,26 +23,23 @@ const ParkHomeScreen = ({ navigation, route }) => {
     { key: 'fourth', title: 'GALLERY' },
   ]);
 
+  
   useEffect(() => {
     const fetchParkingData = async () => {
       try {
-        console.log(`Fetching data for park ID: ${id}`);
-        const parkRef = firebase.database().ref(`parkingData/Park${id}`);
+        const parkRef = firebase.database().ref(`parkingData/${parkId}`);
         const parkSnapshot = await parkRef.once('value');
         const parkData = parkSnapshot.val();
         
         if (parkData) {
           setParkingData(parkData);
-          console.log('Parking data:', parkData);
-
           if (parkData.owner) {
             const ownerRef = firebase.database().ref(`users/${parkData.owner}`);
             const ownerSnapshot = await ownerRef.once('value');
             setOwnerData(ownerSnapshot.val());
-            console.log('Owner data:', ownerSnapshot.val());
           }
         } else {
-          console.error('No park data found for the given ID:', id);
+          console.error('No park data found for the given ID:', parkId);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -52,7 +49,7 @@ const ParkHomeScreen = ({ navigation, route }) => {
     };
 
     fetchParkingData();
-  }, [id]);
+  }, [parkId]);
 
   const renderTabBar = props => (
     <TabBar
@@ -67,7 +64,7 @@ const ParkHomeScreen = ({ navigation, route }) => {
   );
 
   const parkPressed = () => {
-    navigation.navigate("SlotDetailsScreen", { parkId: id });
+    navigation.navigate("SlotDetailsScreen", { parkId: parkId });
   };
 
   if (loading) {
@@ -90,7 +87,7 @@ const ParkHomeScreen = ({ navigation, route }) => {
     <View style={styles.container}>
       <ScrollView>
         <View>
-          <ParkHeader id={id} navigation={navigation} />
+          <ParkHeader id={parkId} navigation={navigation} />
           {parkingData.discount && (
             <View style={styles.view1}>
               <Text style={styles.text1}>
