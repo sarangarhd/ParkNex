@@ -29,11 +29,11 @@ const parkScreen = ({navigation,park,onPress}) => {
     <View>
       {specialData.map((items) => 
       <View key={items.key} style={styles.view1}>
-        <TouchableOpacity onPress={onPress}>
+        
           <View style={styles.view2}>
-            <Text style={styles.text1}>{items.title}</Text>
+            <Text style={styles.text2}>{items.title}</Text>
           </View>
-        </TouchableOpacity>
+        
       </View>
       )}
     </View>
@@ -50,7 +50,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 20,
   },
-  view1: {paddingHorizontal: 10},
+  view1: {paddingHorizontal: 10,
+    fontSize: 28,
+
+  },
 
   view2: {
     flexDirection: 'row',
@@ -61,6 +64,11 @@ const styles = StyleSheet.create({
   },
 
   text1: {
+    color: colors.grey3,
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  text2: {
     color: colors.grey3,
     fontSize: 18,
     fontWeight: 'bold',

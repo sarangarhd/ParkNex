@@ -197,34 +197,12 @@ export const parkFacilityData = [
 
 export const ParkData = [
   {
-    title:'outdoor',
-    special:false,
-    key:0,
-    AvailableSlots:12,
-    slots:20,
-  },
-  {
-    title:'floor-1',
+    title:'BOOK NOW..',
     special:false,
     key:1,
     AvailableSlots:12,
     slots:20,
-  },
-  {
-    title:'floor-2',
-    special:false,
-    key:2,
-    AvailableSlots:12,
-    slots:20,
-  },
-  {
-    title:'floor-3',
-    special:false,
-    key:3,
-    AvailableSlots:12,
-    slots:20,
-  },
-
+  }
 ];
 
 export const specialData = [

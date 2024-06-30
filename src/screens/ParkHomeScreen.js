@@ -66,7 +66,7 @@ const ParkHomeScreen = ({ navigation, route }) => {
   const parkPressed = () => {
     navigation.navigate("SlotDetailsScreen", { parkId: parkId });
   };
-
+ 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>

@@ -2,6 +2,7 @@ import React from 'react';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import ParkMapScreen from '../screens/ParkMapScreen';
 import DrawerNavigator from './DrawerNavigator';
+import PaymentProcessScreen from '../screens/PaymentProcessScreen';
 
 const App = createStackNavigator();
 
@@ -24,6 +25,17 @@ export function AppStack() {
           ...TransitionPresets.RevealFromBottomAndroid,
         }}
       />
+      {/* addd payment process screen ------------------------------ */}
+      <App.Screen
+        name="PaymentProcessScreen"
+        component={PaymentProcessScreen}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.RevealFromBottomAndroid,
+        }}
+        />
+
+
     </App.Navigator>
   );
 }

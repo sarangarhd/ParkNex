@@ -127,11 +127,12 @@ export default function DrawerContent(props) {
 
         <DrawerItemList {...props} />
 
-        <DrawerItem
+        {/* <DrawerItem
           label="Payment"
           icon={({ color, size }) => (
             <Icon name="payment" color={color} size={size} />
           )}
+          onPress={() => props.navigation.navigate('Payment')}
         />
 
         <DrawerItem
@@ -139,6 +140,7 @@ export default function DrawerContent(props) {
           icon={({ color, size }) => (
             <Icon name="local-offer" color={color} size={size} />
           )}
+          onPress={() => props.navigation.navigate('Promotions')}
         />
 
         <DrawerItem
@@ -146,27 +148,29 @@ export default function DrawerContent(props) {
           icon={({ color, size }) => (
             <Icon name="settings" color={color} size={size} />
           )}
-        />
+          onPress={() => props.navigation.navigate('Settings')}
+        /> */}
 
-        <DrawerItem
-          label="Help"
+        {/* <DrawerItem
+          label="About"
           icon={({ color, size }) => (
-            <Icon name="help" color={color} size={size} />
+            <Icon name="info" color={color} size={size} />
           )}
-        />
+          onPress={() => props.navigation.navigate('About')}
+        /> */}
 
         <View style={{ borderTopWidth: 1, borderTopColor: colors.grey4 }}>
           <Text style={styles.preferences}>Preferences</Text>
 
           <View style={styles.switchText}>
-            <Text style={styles.darkthemeText}>Dark Theme</Text>
+            {/* <Text style={styles.darkthemeText}>Dark Theme</Text>
 
             <View style={{ paddingRight: 10 }}>
               <Switch
                 trackColor={{ false: '#767577', true: '#81b0ff' }}
-                thumbColor='#f4f3f4'
+                thumbColor="#f4f3f4"
               />
-            </View>
+            </View> */}
           </View>
         </View>
       </DrawerContentScrollView>
@@ -174,11 +178,7 @@ export default function DrawerContent(props) {
       <DrawerItem
         label="Sign Out"
         icon={({ color, size }) => (
-          <Icon
-            name="logout"
-            color={color}
-            size={size}
-          />
+          <Icon name="logout" color={color} size={size} />
         )}
         onPress={signOut}
       />
@@ -215,4 +215,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-1

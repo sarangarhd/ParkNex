@@ -6,6 +6,7 @@ import { SignInContext } from "../context/authContext";
 
 
 
+
 export default function RootNavigator() {
   const {signedIn} = useContext(SignInContext);
   return (

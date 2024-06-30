@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
 
-const ParkScreen = ({ navigation }) => {
+const ParkScreen = () => {
   const [parkData, setParkData] = useState([]);
   const [bookingEnabled, setBookingEnabled] = useState(true);
+  const navigation = useNavigation();
+  const userId = auth().currentUser.uid;
 
   useEffect(() => {
     const fetchParkData = async () => {
@@ -35,12 +39,55 @@ const ParkScreen = ({ navigation }) => {
       alert('Booking is temporarily disabled.');
       return;
     }
+
+    Alert.alert(
+      'Confirm Booking',
+      'Confirm your booking now?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          onPress: () => confirmBooking(id),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const confirmBooking = async (slotId) => {
     try {
-      const ref = database().ref(`/slots/${id}`);
-      await ref.set(false); // Update the status to 'false' (BOOKED)
+      const userRef = database().ref(`/users/${userId}`);
+      const userSnapshot = await userRef.once('value');
+      const userData = userSnapshot.val();
+
+      const parkRef = database().ref(`/slots/${slotId}`);
+      await parkRef.set(false); // Update the status to 'false' (BOOKED)
+
       setParkData((prevData) =>
-        prevData.map((slot) => (slot.id === id ? { ...slot, status: false } : slot))
+        prevData.map((slot) => (slot.id === slotId ? { ...slot, status: false } : slot))
       );
+
+      const reservationTime = new Date().toLocaleTimeString();
+      const reservationDate = new Date().toLocaleDateString();
+
+      const newReservation = {
+        parkId: 'yourParkId', // You need to replace 'yourParkId' with the actual park ID
+        slotId,
+        reservationTime,
+        reservationDate,
+      };
+
+      await database().ref(`/userReservations/${userId}`).push(newReservation);
+      await database().ref(`/parkReservations/yourParkId`).push({
+        ...newReservation,
+        userName: userData.name,
+        userVehicleNumber: userData.vehicle_number,
+      });
+
+      navigation.navigate('MyPark');
     } catch (error) {
       console.error('Error updating data: ', error);
     }

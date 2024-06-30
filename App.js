@@ -14,7 +14,7 @@ import DrawerNavigator from './src/navigation/DrawerNavigator';
 export default function App() {
   return (
     <SignInContextProvider>
-      
+       
       <View style={styles.container}>
         <StatusBar
           barStyle="light-content"

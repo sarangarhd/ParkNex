@@ -3,12 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Button
 import { Icon } from 'react-native-elements';
 import firebase from '../firebase'; // Adjust the path according to your project structure
 import { colors } from '../global/Styles';
+import PaymentProcessScreen from './PaymentProcessScreen';
 
 const BusinessConsoleScreen = ({ navigation }) => {
   const [parkData, setParkData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [reservations, setReservations] = useState([]);
   const [newParkData, setNewParkData] = useState({
     ParkName: '',
     NumberOfSpaces: '',
@@ -37,6 +39,29 @@ const BusinessConsoleScreen = ({ navigation }) => {
           setIsNewUser(true);
         }
         setLoading(false);
+      });
+
+      const reservationRef = firebase.database().ref(`slotReservations`).orderByChild('parkId').equalTo(user.uid);
+      reservationRef.on('value', async (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const formattedData = Object.keys(data)
+            .map(async (key) => {
+              const reservation = data[key];
+              const userSnapshot = await firebase.database().ref(`users/${reservation.userId}`).once('value');
+              const userData = userSnapshot.val();
+              return {
+                ...reservation,
+                id: key, // Add the key for later use
+                userName: userData.name,
+                userVehicle: userData.vehicle_number,
+              };
+            });
+
+          const resolvedData = await Promise.all(formattedData);
+          const filteredData = resolvedData.filter(reservation => reservation.paymentStatus === 'Pending');
+          setReservations(filteredData);
+        }
       });
     };
 
@@ -88,6 +113,32 @@ const BusinessConsoleScreen = ({ navigation }) => {
       setIsNewUser(false);
     } catch (error) {
       console.error('Error creating data: ', error);
+    }
+  };
+
+  const handleArrived = async (reservationId) => {
+    const arrivalTime = new Date().toLocaleTimeString();
+
+    try {
+      await firebase.database().ref(`slotReservations/${reservationId}`).update({ arrivalTime });
+      setReservations((prevReservations) =>
+        prevReservations.map((reservation) =>
+          reservation.id === reservationId ? { ...reservation, arrivalTime } : reservation
+        )
+      );
+    } catch (error) {
+      console.error('Error updating arrival time:', error);
+    }
+  };
+
+  const handlePayment = async (reservationId) => {
+    const departureTime = new Date().toLocaleTimeString();
+
+    try {
+      await firebase.database().ref(`slotReservations/${reservationId}`).update({ departureTime });
+      navigation.navigate('PaymentProcessScreen', { reservationId });
+    } catch (error) {
+      console.error('Error updating departure time:', error);
     }
   };
 
@@ -178,18 +229,28 @@ const BusinessConsoleScreen = ({ navigation }) => {
         </View>
         <Text style={styles.subHeader}>Booked Slots</Text>
         <View style={styles.parkingArea}>
-          {Object.keys(parkData.slots || {}).filter(slot => !parkData.slots[slot]).map((slot) => (
-            <View key={slot} style={styles.slotContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.slot,
-                  styles.booked,
-                ]}
-                onPress={() => handlePress(slot)}
-              >
-                <Text style={styles.slotText}>{slot}</Text>
-                <Text style={styles.statusText}>BOOKED</Text>
-              </TouchableOpacity>
+          {reservations.map((reservation, index) => (
+            <View key={index} style={styles.reservationContainer}>
+              <Text style={styles.slotText}>Slot: {reservation.slotId}</Text>
+              <Text style={styles.slotText}>Date: {reservation.bookingDate}</Text>
+              <Text style={styles.slotText}>Time: {reservation.bookingTime}</Text>
+              <Text style={styles.slotText}>User: {reservation.userName}</Text>
+              <Text style={styles.slotText}>Vehicle: {reservation.userVehicle}</Text>
+              {!reservation.arrivalTime ? (
+                <TouchableOpacity
+                  style={styles.arrivedButton}
+                  onPress={() => handleArrived(reservation.id)}
+                >
+                  <Text style={styles.buttonText}>Arrived</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.paymentButton}
+                  onPress={() => handlePayment(reservation.id)}
+                >
+                  <Text style={styles.buttonText}>Payment</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ))}
         </View>
@@ -285,5 +346,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.cardbackground,
     marginTop: 10,
+  },
+  reservationContainer: {
+    backgroundColor: '#FFCDD2',
+    padding: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+    marginVertical: 10,
+    width: '100%',
+  },
+  arrivedButton: {
+    backgroundColor: colors.buttons,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  paymentButton: {
+    backgroundColor: colors.grey3,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
