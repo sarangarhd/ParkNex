@@ -10,21 +10,29 @@ import {
   Image,
   Dimensions,
   StatusBar,
+  PermissionsAndroid,
+  Platform
 } from 'react-native';
 import HomeHeader from '../components/HomeHeader';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { colors, parameters } from '../global/Styles';
+import { colors } from '../global/Styles';
 import { filterData, parkingData as nearestParkingData } from '../global/Data';
 import ParkCard from '../components/ParkCard';
-import { useNavigation } from '@react-navigation/native';
 import database from '@react-native-firebase/database';
+import Geolocation from 'react-native-geolocation-service';
+import Geocoder from 'react-native-geocoding';
+import auth from '@react-native-firebase/auth';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+
+// Initialize the Geocoder with your API key
+Geocoder.init('AIzaSyBilxfymdS0aq0bhs2knaGLURzMG35fkLo'); 
 
 export default function HomeScreen({ navigation }) {
   const [park, setPark] = useState(true);
   const [indexCheck, setIndexCheck] = useState('0');
   const [publicParkingData, setPublicParkingData] = useState([]);
+  const [currentAddress, setCurrentAddress] = useState('Fetching location...');
 
   useEffect(() => {
     const fetchPublicParkingData = async () => {
@@ -48,7 +56,78 @@ export default function HomeScreen({ navigation }) {
     };
 
     fetchPublicParkingData();
+    requestLocationPermission();
+    
+    const intervalId = setInterval(() => {
+      getLocation();
+    }, 60000); // 60000 milliseconds = 1 minute
+
+    return () => clearInterval(intervalId);
   }, []);
+
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'ParkNex Location Permission',
+            message:
+              'ParkNex needs access to your location ' +
+              'so you can see nearby parking spots.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          getLocation();
+        } else {
+          console.warn('Location permission denied');
+          setCurrentAddress('Location permission not granted');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    } else {
+      getLocation();
+    }
+  };
+
+  const getLocation = async () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        console.log('Full location data:', position);
+        const { latitude, longitude } = position.coords;
+        Geocoder.from(latitude, longitude)
+          .then(json => {
+            console.log('Geocoding response:', json);
+            const address = json.results[0].formatted_address;
+            setCurrentAddress(address);
+            updateUserLocation(address);
+          })
+          .catch(error => console.warn(error));
+      },
+      (error) => {
+        console.warn(error);
+        setCurrentAddress('Location not available');
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
+
+  const updateUserLocation = async (address) => {
+    const user = auth().currentUser;
+    if (user) {
+      const userId = user.uid;
+      await database().ref(`users/${userId}`).update({
+        currentLocation: address,
+      });
+      console.log('User location updated in database.');
+    } else {
+      console.warn('No user is signed in.');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -88,17 +167,15 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.addresView}>
             <View style={styles.map}>
               <Icon name="map-marker" color={colors.buttons} size={25} />
-              <Text style={{ marginLeft: 5 }}>No:27,Colombo-01</Text>
+              <Text style={{ marginLeft: 5 }}>{currentAddress}</Text>
             </View>
             <View style={styles.clock}>
-              <Icon name="clock-o" color={colors.buttons} size={25} />
               <Text style={{ marginLeft: 5 }}>Now</Text>
             </View>
           </View>
 
           <View>
             <TouchableOpacity>
-              <Icon name="cogs" color={colors.buttons} type={'font-awesome'} size={25} />
             </TouchableOpacity>
           </View>
         </View>
